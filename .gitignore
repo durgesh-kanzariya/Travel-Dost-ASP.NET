@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+node_modules/
+*.user
+build_error.txt
+local_backup.sql
+neon_backup.sql
+neon_prod_backup.sql
