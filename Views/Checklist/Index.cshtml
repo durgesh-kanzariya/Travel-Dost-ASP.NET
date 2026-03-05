@@ -1,0 +1,153 @@
+@using travel_dost_asp.net.Models
+@model List<ChecklistItem>
+@{
+    ViewData["Title"] = "Travel Checklist";
+    Layout = "_DashboardLayout";
+    var trips = ViewBag.Trips as List<Trip> ?? new List<Trip>();
+    var selectedTripId = ViewBag.SelectedTripId as int?;
+    
+    var completedCount = Model.Count(i => i.IsChecked);
+    var totalCount = Model.Count;
+    var progressPercent = totalCount > 0 ? (int)Math.Round((double)completedCount / totalCount * 100) : 0;
+}
+
+<div class="mb-8">
+    <div class="mb-8">
+        <nav class="flex mb-2" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                <li><a asp-controller="Home" asp-action="Dashboard" class="hover:text-sky-600 transition-colors">Dashboard</a></li>
+                <li><i data-lucide="chevron-right" class="h-3 w-3"></i></li>
+                <li class="text-slate-900 dark:text-white">Checklist</li>
+            </ol>
+        </nav>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-2">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl flex items-center gap-3">
+                    <i data-lucide="list-checks" class="h-8 w-8 text-sky-600 dark:text-sky-400"></i>
+                    Checklist
+                </h1>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">
+                    @completedCount of @totalCount items completed
+                </p>
+            </div>
+
+            <div class="relative w-full sm:w-64">
+                <select id="trip-selector" onchange="location.href='?trip_id=' + this.value" 
+                        class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white p-3 text-sm font-medium focus:ring-2 focus:ring-sky-500/20 outline-none">
+                    <option value="">Global Checklist</option>
+                    @foreach (var trip in trips)
+                    {
+                        var destName = string.IsNullOrEmpty(trip.Destination) ? "Unnamed Trip" : trip.Destination.Replace("|", " → ");
+                        if (selectedTripId == trip.TripId)
+                        {
+                            <option value="@trip.TripId" selected>@destName (@trip.StartDate.ToShortDateString())</option>
+                        }
+                        else
+                        {
+                            <option value="@trip.TripId">@destName (@trip.StartDate.ToShortDateString())</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip Banner -->
+    @if (selectedTripId.HasValue && trips.Any(t => t.TripId == selectedTripId))
+    {
+        var activeTrip = trips.First(t => t.TripId == selectedTripId);
+        <div class="mb-6 p-4 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-xl">
+            <div class="flex items-center gap-3">
+                <i data-lucide="plane" class="h-5 w-5 text-violet-600 dark:text-violet-400"></i>
+                <div>
+                    <p class="text-sm text-violet-600 dark:text-violet-400 font-medium">@activeTrip.Destination.Replace("|", " → ")</p>
+                    <p class="text-xs text-violet-500 dark:text-violet-500">
+                        @activeTrip.StartDate.ToString("MMMM d, yyyy")
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Progress Bar -->
+    <div class="mb-6 rounded-xl border border-sky-200 dark:border-sky-900 bg-white dark:bg-slate-900 p-6 shadow-sm">
+        <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Overall Progress</p>
+                <p class="text-sm font-bold text-sky-600 dark:text-sky-400">@progressPercent%</p>
+            </div>
+            <div class="h-3 w-full rounded-full bg-slate-200 dark:bg-slate-700">
+                <div class="h-3 rounded-full bg-sky-600 dark:bg-sky-500 transition-all duration-300" style="width: @progressPercent%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Form -->
+    <div class="mb-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+        <form asp-action="Add" method="post" class="flex gap-2">
+            <input type="hidden" name="tripId" value="@selectedTripId" />
+            <input type="text" name="itemName" required placeholder="Add a new item..." 
+                   class="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20" />
+            <button type="submit" class="flex items-center gap-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 font-medium transition-colors">
+                <i data-lucide="plus" class="h-5 w-5"></i>
+                Add
+            </button>
+        </form>
+    </div>
+
+    <!-- Items List -->
+    <div class="space-y-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm min-h-[200px]">
+        @if (!Model.Any())
+        {
+            <div class="flex flex-col items-center justify-center py-10 text-slate-400">
+                <i data-lucide="clipboard-list" class="h-12 w-12 mb-2 opacity-20"></i>
+                <p>Your list is empty. Start adding items!</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div id="item-@item.Id" class="flex items-center gap-3 rounded-lg px-3 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <input type="checkbox" @(item.IsChecked ? "checked" : "") onclick="toggleItem(@item.Id)" 
+                           class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-sky-600 focus:ring-sky-500 cursor-pointer bg-white dark:bg-slate-700" />
+                    <span class="flex-1 text-sm break-all @(item.IsChecked ? "text-slate-400 dark:text-slate-600 line-through" : "text-slate-700 dark:text-slate-200")">
+                        @item.ItemName
+                    </span>
+                    <button onclick="deleteItem(@item.Id)" class="rounded-lg p-2 text-slate-400 dark:text-slate-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400">
+                        <i data-lucide="trash-2" class="h-4 w-4"></i>
+                    </button>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function toggleItem(id) {
+            try {
+                const res = await fetch(`/Checklist/Toggle?id=${id}`, { method: 'POST' });
+                if (res.ok) {
+                    location.reload(); // Simple refresh to update progress bar and UI
+                }
+            } catch (e) {
+                alert('Failed to update item.');
+            }
+        }
+
+        async function deleteItem(id) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            try {
+                const res = await fetch(`/Checklist/Delete?id=${id}`, { method: 'POST' });
+                if (res.ok) {
+                    document.getElementById(`item-${id}`).remove();
+                    // Optionally refresh to update progress counter/bar
+                    location.reload();
+                }
+            } catch (e) {
+                alert('Failed to delete item.');
+            }
+        }
+    </script>
+}
