@@ -1,0 +1,226 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-16 sm:py-24 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+            <div class="flex flex-col gap-6">
+                <h1 class="text-balance text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
+                    Explore the World <span class="text-sky-600 dark:text-sky-500">Without Fear</span>
+                </h1>
+                <p class="text-pretty text-lg text-slate-600 dark:text-slate-400 sm:text-xl">
+                    Your smart travel companion that auto-detects your location to
+                    provide instant emergency numbers, regional rules, language tools,
+                    and local insights. Travel safe, travel smart.
+                </p>
+                <div class="flex flex-col gap-4 sm:flex-row">
+                    <a asp-controller="Auth" asp-action="SignUp" class="inline-flex items-center justify-center gap-2 rounded-lg bg-sky-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-sky-700 dark:bg-sky-600 dark:hover:bg-sky-500">
+                        Start Your Journey
+                        <i data-lucide="arrow-right" class="h-5 w-5"></i>
+                    </a>
+                    <a href="#features" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-3 text-base font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="relative mx-auto aspect-square max-w-md rounded-3xl bg-gradient-to-br from-sky-600 to-teal-500 p-1 shadow-2xl dark:shadow-sky-900/20">
+                    <div class="flex h-full w-full flex-col items-center justify-center gap-6 rounded-3xl bg-white dark:bg-slate-900 p-8">
+                        <div class="flex items-center gap-3 rounded-full bg-sky-100 dark:bg-sky-900/30 px-4 py-2">
+                            <i data-lucide="map-pin" class="h-5 w-5 text-sky-600 dark:text-sky-400"></i>
+                            <span class="text-sm font-medium text-sky-700 dark:text-sky-300">
+                                Location Detected: Tokyo, Japan
+                            </span>
+                        </div>
+                        <div class="grid w-full grid-cols-2 gap-4">
+                            <div class="rounded-xl bg-red-50 dark:bg-red-900/20 p-4 text-center">
+                                <i data-lucide="shield" class="mx-auto h-8 w-8 text-red-500 dark:text-red-400"></i>
+                                <p class="mt-2 text-xs font-medium text-red-700 dark:text-red-300">
+                                    Emergency: 110
+                                </p>
+                            </div>
+                            <div class="rounded-xl bg-teal-50 dark:bg-teal-900/20 p-4 text-center">
+                                <i data-lucide="languages" class="mx-auto h-8 w-8 text-teal-500 dark:text-teal-400"></i>
+                                <p class="mt-2 text-xs font-medium text-teal-700 dark:text-teal-300">
+                                    Language: Japanese
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-center text-sm text-slate-500 dark:text-slate-400">
+                            Tip: Tipping is not customary and can be considered rude in
+                            Japan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="bg-white dark:bg-slate-900 py-16 sm:py-24 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                Everything You Need to Travel Safe
+            </h2>
+            <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
+                Powerful features designed to keep you informed, prepared, and
+                confident wherever your adventures take you.
+            </p>
+        </div>
+
+        <div class="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="group relative rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all hover:border-sky-200 dark:hover:border-sky-800 hover:shadow-lg dark:hover:shadow-slate-900/50">
+                <div class="inline-flex rounded-xl p-3 bg-sky-100 dark:bg-sky-900/20 text-sky-600">
+                    <i data-lucide="map-pin" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Smart Location Detection</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Automatically detects your location and provides region-specific information instantly.</p>
+            </div>
+            <div class="group relative rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all hover:border-sky-200 dark:hover:border-sky-800 hover:shadow-lg dark:hover:shadow-slate-900/50">
+                <div class="inline-flex rounded-xl p-3 bg-red-100 dark:bg-red-900/20 text-red-600">
+                    <i data-lucide="shield-alert" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Emergency SOS</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">One-tap access to local emergency numbers for police, ambulance, and fire services.</p>
+            </div>
+            <div class="group relative rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all hover:border-sky-200 dark:hover:border-sky-800 hover:shadow-lg dark:hover:shadow-slate-900/50">
+                <div class="inline-flex rounded-xl p-3 bg-amber-100 dark:bg-amber-900/20 text-amber-600">
+                    <i data-lucide="scroll-text" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Uncommon Rules</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Learn about local laws and customs that tourists often miss, avoiding fines and embarrassment.</p>
+            </div>
+            <div class="group relative rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all hover:border-sky-200 dark:hover:border-sky-800 hover:shadow-lg dark:hover:shadow-slate-900/50">
+                <div class="inline-flex rounded-xl p-3 bg-teal-100 dark:bg-teal-900/20 text-teal-600">
+                    <i data-lucide="languages" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Language Tools</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Essential phrases, pronunciation guides, and real-time translation for seamless communication.</p>
+            </div>
+            <div class="group relative rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all hover:border-sky-200 dark:hover:border-sky-800 hover:shadow-lg dark:hover:shadow-slate-900/50">
+                <div class="inline-flex rounded-xl p-3 bg-purple-100 dark:bg-purple-900/20 text-purple-600">
+                    <i data-lucide="clipboard-list" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Trip Checklist</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Customized packing lists and travel document reminders based on your destination.</p>
+            </div>
+            <div class="group relative rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all hover:border-sky-200 dark:hover:border-sky-800 hover:shadow-lg dark:hover:shadow-slate-900/50">
+                <div class="inline-flex rounded-xl p-3 bg-pink-100 dark:bg-pink-900/20 text-pink-600">
+                    <i data-lucide="sparkles" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Local Gems</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Discover hidden spots, local favorites, and authentic experiences off the tourist trail.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="how-it-works" class="bg-slate-50 dark:bg-slate-950 py-16 sm:py-24 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                How It Works
+            </h2>
+            <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
+                Start exploring the world safely in three simple steps.
+            </p>
+        </div>
+
+        <div class="mt-16 grid gap-8 md:grid-cols-3">
+            <div class="relative flex flex-col items-center text-center">
+                <div class="absolute right-0 top-12 hidden h-0.5 w-full translate-x-1/2 bg-gradient-to-r from-sky-300 to-transparent dark:from-sky-800 md:block"></div>
+                <div class="relative">
+                    <div class="flex h-24 w-24 items-center justify-center rounded-full bg-sky-600 shadow-lg dark:shadow-sky-900/30">
+                        <i data-lucide="user-plus" class="h-10 w-10 text-white"></i>
+                    </div>
+                    <span class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-teal-500 text-sm font-bold text-white shadow-sm border-2 border-slate-50 dark:border-slate-950">
+                        01
+                    </span>
+                </div>
+                <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Create Your Account</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Sign up for free on our website to access your personalized travel dashboard.</p>
+            </div>
+            <div class="relative flex flex-col items-center text-center">
+                <div class="absolute right-0 top-12 hidden h-0.5 w-full translate-x-1/2 bg-gradient-to-r from-sky-300 to-transparent dark:from-sky-800 md:block"></div>
+                <div class="relative">
+                    <div class="flex h-24 w-24 items-center justify-center rounded-full bg-sky-600 shadow-lg dark:shadow-sky-900/30">
+                        <i data-lucide="map-pin" class="h-10 w-10 text-white"></i>
+                    </div>
+                    <span class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-teal-500 text-sm font-bold text-white shadow-sm border-2 border-slate-50 dark:border-slate-950">
+                        02
+                    </span>
+                </div>
+                <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Enable Location</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Allow location access in your browser so TravelDost can detect where you are instantly.</p>
+            </div>
+            <div class="relative flex flex-col items-center text-center">
+                <div class="relative">
+                    <div class="flex h-24 w-24 items-center justify-center rounded-full bg-sky-600 shadow-lg dark:shadow-sky-900/30">
+                        <i data-lucide="compass" class="h-10 w-10 text-white"></i>
+                    </div>
+                    <span class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-teal-500 text-sm font-bold text-white shadow-sm border-2 border-slate-50 dark:border-slate-950">
+                        03
+                    </span>
+                </div>
+                <h3 class="mt-6 text-xl font-semibold text-slate-900 dark:text-white">Start Exploring</h3>
+                <p class="mt-2 text-slate-600 dark:text-slate-400">Instantly view emergency numbers, regional rules, and travel tools for your current location.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="bg-white dark:bg-slate-900 py-16 sm:py-24 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                About TravelDost
+            </h2>
+            <p class="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-400">
+                Born from a 6th Semester Major Project, TravelDost aims to make tourism safer and smarter.
+                We believe that lack of local knowledge shouldn't be a barrier to exploration.
+                By combining geolocation technology with a curated database of local rules and emergency contacts,
+                we empower travelers to visit new places with confidence.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 py-16 sm:py-24 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                Get in Touch
+            </h2>
+            <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
+                Have questions or want to contribute to our database?
+            </p>
+        </div>
+
+        <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-3">
+            <div class="flex flex-col items-center rounded-2xl bg-white dark:bg-slate-800 p-8 text-center shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 transition-colors">
+                <div class="rounded-lg p-3 bg-sky-100 dark:bg-sky-900/20 text-sky-600">
+                    <i data-lucide="mail" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-base font-semibold text-slate-900 dark:text-white">Email Us</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">support@traveldost.com</p>
+            </div>
+            <div class="flex flex-col items-center rounded-2xl bg-white dark:bg-slate-800 p-8 text-center shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 transition-colors">
+                <div class="rounded-lg p-3 bg-teal-100 dark:bg-teal-900/20 text-teal-600">
+                    <i data-lucide="phone" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-base font-semibold text-slate-900 dark:text-white">Call Us</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">+91 90548 31231</p>
+            </div>
+            <div class="flex flex-col items-center rounded-2xl bg-white dark:bg-slate-800 p-8 text-center shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 transition-colors">
+                <div class="rounded-lg p-3 bg-amber-100 dark:bg-amber-900/20 text-amber-600">
+                    <i data-lucide="map-pin" class="h-6 w-6"></i>
+                </div>
+                <h3 class="mt-4 text-base font-semibold text-slate-900 dark:text-white">Visit Us</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Rajkot, Gujarat, India</p>
+            </div>
+        </div>
+    </div>
+</section>
