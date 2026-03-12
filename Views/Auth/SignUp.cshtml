@@ -1,0 +1,134 @@
+@{
+    ViewData["Title"] = "SignUp";
+    Layout = null;
+    var languages = new[] {
+        new { Code = "en", Name = "English" },
+        new { Code = "es", Name = "Spanish" },
+        new { Code = "fr", Name = "French" },
+        new { Code = "de", Name = "German" },
+        new { Code = "hi", Name = "Hindi" },
+        new { Code = "gu", Name = "Gujarati" },
+        new { Code = "zh", Name = "Chinese (Simplified)" },
+        new { Code = "ar", Name = "Arabic" },
+        new { Code = "bn", Name = "Bengali" },
+        new { Code = "ru", Name = "Russian" },
+        new { Code = "ja", Name = "Japanese" },
+        new { Code = "pt", Name = "Portuguese" },
+        new { Code = "it", Name = "Italian" },
+        new { Code = "ko", Name = "Korean" },
+        new { Code = "tr", Name = "Turkish" },
+        new { Code = "vi", Name = "Vietnamese" },
+        new { Code = "th", Name = "Thai" },
+        new { Code = "nl", Name = "Dutch" },
+        new { Code = "pl", Name = "Polish" },
+        new { Code = "id", Name = "Indonesian" }
+    };
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - TravelDost</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 px-4 transition-colors duration-300">
+    <div class="w-full max-w-md">
+        <a asp-controller="Home" asp-action="Index" class="mb-6 flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
+            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+            Back to Home
+        </a>
+
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-xl dark:shadow-slate-900/50">
+            <div class="flex flex-col items-center gap-2">
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Create Account</h1>
+                <p class="text-slate-600 dark:text-slate-400">Join us to explore the world safely</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="mt-4 rounded-lg bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form method="post" class="mt-8 flex flex-col gap-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">First Name</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
+                            <input type="text" name="firstName" placeholder="John" required autofocus
+                                   class="w-full rounded-lg border border-slate-300 dark:border-slate-600 py-3 pl-10 pr-4 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Last Name</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
+                            <input type="text" name="lastName" placeholder="Doe" required
+                                   class="w-full rounded-lg border border-slate-300 dark:border-slate-600 py-3 pl-10 pr-4 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Native Language</label>
+                    <div class="relative">
+                        <i data-lucide="languages" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
+                        <select name="nativeLanguage" required
+                                class="w-full rounded-lg border border-slate-300 dark:border-slate-600 py-3 pl-10 pr-4 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+                            <option value="" disabled selected>Select your language</option>
+                            @foreach (var lang in languages)
+                            {
+                                <option value="@lang.Name">@lang.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
+                        <input type="email" name="email" placeholder="you@example.com" required
+                               class="w-full rounded-lg border border-slate-300 dark:border-slate-600 py-3 pl-10 pr-4 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20" />
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
+                        <input type="password" name="password" placeholder="••••••••" required
+                               class="w-full rounded-lg border border-slate-300 dark:border-slate-600 py-3 pl-10 pr-4 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20" />
+                    </div>
+                </div>
+
+                <button type="submit" class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 hover:bg-sky-700 dark:bg-sky-600 dark:hover:bg-sky-500 py-3 font-medium text-white transition-colors">
+                    Create Account
+                    <i data-lucide="arrow-right" class="h-5 w-5"></i>
+                </button>
+            </form>
+
+            <p class="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+                Already have an account? 
+                <a asp-action="Login" class="font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300">
+                    Sign In
+                </a>
+            </p>
+        </div>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
