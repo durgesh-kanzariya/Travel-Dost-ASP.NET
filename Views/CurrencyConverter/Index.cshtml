@@ -1,0 +1,155 @@
+@{
+    ViewData["Title"] = "Currency Converter";
+    Layout = "_DashboardLayout";
+}
+
+<div class="mb-8">
+    <div class="mb-8">
+        <nav class="flex mb-2" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                <li><a asp-controller="Home" asp-action="Dashboard" class="hover:text-sky-600 transition-colors">Dashboard</a></li>
+                <li><i data-lucide="chevron-right" class="h-3 w-3"></i></li>
+                <li class="text-slate-900 dark:text-white">Currency Converter</li>
+            </ol>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
+            Currency Converter
+        </h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">
+            Real-time exchange rates for international travel.
+        </p>
+    </div>
+
+    <div class="mx-auto max-w-[416px] rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-lg sm:p-5 transition-colors">
+        <div class="space-y-4">
+            <div>
+                <label class="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">Amount</label>
+                <input
+                    type="number"
+                    id="amount"
+                    value="1.00"
+                    step="0.01"
+                    class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-lg font-bold text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 outline-none"
+                />
+            </div>
+
+            <div class="grid grid-cols-[1fr,auto,1fr] gap-3 items-center">
+                <div>
+                    <label class="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">From</label>
+                    <select id="from-currency" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white px-3 py-2 text-sm font-medium outline-none focus:border-sky-500 transition-colors">
+                        <option value="USD" selected>🇺🇸 USD</option>
+                        <option value="INR">🇮🇳 INR</option>
+                        <option value="EUR">🇪🇺 EUR</option>
+                        <option value="GBP">🇬🇧 GBP</option>
+                        <option value="JPY">🇯🇵 JPY</option>
+                        <option value="AUD">🇦🇺 AUD</option>
+                        <option value="CAD">🇨🇦 CAD</option>
+                        <option value="AED">🇦🇪 AED</option>
+                    </select>
+                </div>
+                <button id="swap-btn" class="mt-5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 text-slate-600 hover:text-sky-600 transition-colors">
+                    <i data-lucide="arrow-right-left" class="h-4 w-4"></i>
+                </button>
+                <div>
+                    <label class="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">To</label>
+                    <select id="to-currency" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white px-3 py-2 text-sm font-medium outline-none focus:border-sky-500 transition-colors">
+                        <option value="USD">🇺🇸 USD</option>
+                        <option value="INR" selected>🇮🇳 INR</option>
+                        <option value="EUR">🇪🇺 EUR</option>
+                        <option value="GBP">🇬🇧 GBP</option>
+                        <option value="JPY">🇯🇵 JPY</option>
+                        <option value="AUD">🇦🇺 AUD</option>
+                        <option value="CAD">🇨🇦 CAD</option>
+                        <option value="AED">🇦🇪 AED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-container" class="mt-5 rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 text-center">
+            <div id="loading-spinner" class="hidden flex justify-center py-2">
+                <i data-lucide="refresh-cw" class="h-6 w-6 animate-spin text-sky-600"></i>
+            </div>
+            <div id="result-content">
+                <p class="text-xs font-medium text-slate-500"><span id="display-amount">1</span> <span id="display-from">USD</span> =</p>
+                <p class="mt-1 text-2xl font-bold text-sky-600 dark:text-sky-400"><span id="converted-value">0.00</span> <span id="display-to" class="text-lg text-sky-500">INR</span></p>
+                <div class="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400">
+                    <i data-lucide="trending-up" class="h-3 w-3"></i>
+                    <span>1 <span id="rate-base">USD</span> = <span id="rate-value">0.00</span> <span id="rate-target">INR</span></span>
+                </div>
+            </div>
+        </div>
+
+        <button id="refresh-btn" class="mt-4 w-full rounded-xl bg-sky-600 hover:bg-sky-700 py-2 text-sm font-bold text-white shadow-lg transition-transform hover:scale-[1.01]">
+            Refresh Rates
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const amountInput = document.getElementById('amount');
+        const fromSelect = document.getElementById('from-currency');
+        const toSelect = document.getElementById('to-currency');
+        const convertedValue = document.getElementById('converted-value');
+        const displayAmount = document.getElementById('display-amount');
+        const displayFrom = document.getElementById('display-from');
+        const displayTo = document.getElementById('display-to');
+        const rateBase = document.getElementById('rate-base');
+        const rateTarget = document.getElementById('rate-target');
+        const rateValueDisplay = document.getElementById('rate-value');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const resultContent = document.getElementById('result-content');
+
+        let rates = {};
+
+        async function fetchRates() {
+            const base = fromSelect.value;
+            loadingSpinner.classList.remove('hidden');
+            resultContent.classList.add('opacity-50');
+            
+            try {
+                const res = await fetch(`/api/currency/rates/${base}`);
+                const data = await res.json();
+                rates = data.rates;
+                updateUI();
+            } catch (e) {
+                alert('Failed to fetch current exchange rates.');
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                resultContent.classList.remove('opacity-50');
+            }
+        }
+
+        function updateUI() {
+            const amount = parseFloat(amountInput.value) || 0;
+            const to = toSelect.value;
+            const rate = rates[to] || 0;
+            const converted = (amount * rate).toFixed(2);
+
+            displayAmount.innerText = amount;
+            displayFrom.innerText = fromSelect.value;
+            displayTo.innerText = to;
+            convertedValue.innerText = converted;
+            rateBase.innerText = fromSelect.value;
+            rateTarget.innerText = to;
+            rateValueDisplay.innerText = rate.toFixed(4);
+        }
+
+        amountInput.addEventListener('input', updateUI);
+        fromSelect.addEventListener('change', fetchRates);
+        toSelect.addEventListener('change', updateUI);
+        
+        document.getElementById('swap-btn').onclick = () => {
+            const temp = fromSelect.value;
+            fromSelect.value = toSelect.value;
+            toSelect.value = temp;
+            fetchRates();
+        };
+
+        document.getElementById('refresh-btn').onclick = fetchRates;
+
+        // Init
+        fetchRates();
+    </script>
+}
