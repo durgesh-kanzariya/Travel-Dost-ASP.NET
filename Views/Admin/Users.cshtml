@@ -1,0 +1,136 @@
+@model List<travel_dost_asp.net.Models.User>
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
+            Manage Users
+        </h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">
+            View and manage @Model.Count registered users.
+        </p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative">
+        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+        <input type="text"
+               id="user-search-input"
+               placeholder="Search users..."
+               class="w-full sm:w-64 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 pl-10 pr-4 py-2 text-sm text-slate-900 dark:text-white focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" />
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700" id="users-table">
+            <thead class="bg-slate-50 dark:bg-slate-800/50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Role</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Joined</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
+                @if (Model == null || !Model.Any())
+                {
+                    <tr id="empty-state">
+                        <td colspan="4" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                            No users found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var user in Model)
+                    {
+                        var firstInitial = !string.IsNullOrEmpty(user.FirstName) ? user.FirstName.Substring(0, 1).ToUpper() : "?";
+                        <tr id="user-@user.Id" class="user-row hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" data-search="@(user.FirstName + " " + user.LastName + " " + user.Email)">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                        <span class="text-lg font-bold text-slate-600 dark:text-slate-400">
+                                            @firstInitial
+                                        </span>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-slate-900 dark:text-white">@user.FirstName @user.LastName</div>
+                                        <div class="text-sm text-slate-500 dark:text-slate-400">@user.Email</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if (user.Role == "admin")
+                                {
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                        <i data-lucide="shield" class="mr-1 h-3 w-3"></i>
+                                        Admin
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                        <i data-lucide="user" class="mr-1 h-3 w-3"></i>
+                                        User
+                                    </span>
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                                @user.CreatedAt.ToShortDateString()
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                @if (user.Role != "admin")
+                                {
+                                    <button onclick="deleteUser(@user.Id)"
+                                            class="text-red-600 hover:text-red-900 dark:hover:text-red-400 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                            title="Delete User">
+                                        <i data-lucide="trash-2" class="h-5 w-5"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Client-side search filtering
+        document.getElementById('user-search-input').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.user-row');
+            
+            rows.forEach(row => {
+                const searchData = row.getAttribute('data-search').toLowerCase();
+                if (searchData.includes(term)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        async function deleteUser(id) {
+            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+            try {
+                const res = await fetch(`/Admin/DeleteUser/${id}`, { method: 'POST' });
+                if (res.ok) {
+                    document.getElementById(`user-${id}`).remove();
+                    alert('User deleted successfully.');
+                } else {
+                    alert('Failed to delete user.');
+                }
+            } catch (e) {
+                alert('An error occurred.');
+            }
+        }
+    </script>
+}
