@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Anjali\\OneDrive\\TravelDost_MVC\\MVC\\TravelDost_MVC.csproj",
+      "projectUniqueName": "C:\\Users\\Anjali\\OneDrive\\SEM_6_PROJECT\\TravelDost_MVC\\MVC\\TravelDost_MVC.csproj",
       "projectName": "TravelDost_MVC",
-      "projectPath": "C:\\Users\\Anjali\\OneDrive\\TravelDost_MVC\\MVC\\TravelDost_MVC.csproj",
+      "projectPath": "C:\\Users\\Anjali\\OneDrive\\SEM_6_PROJECT\\TravelDost_MVC\\MVC\\TravelDost_MVC.csproj",
       "packagesPath": "C:\\Users\\Anjali\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Anjali\\OneDrive\\TravelDost_MVC\\MVC\\obj\\",
+      "outputPath": "C:\\Users\\Anjali\\OneDrive\\SEM_6_PROJECT\\TravelDost_MVC\\MVC\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

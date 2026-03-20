@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "TravelDost_MVC/1.0.0": {
+        "runtime": {
+          "TravelDost_MVC.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TravelDost_MVC/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
