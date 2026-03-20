@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TravelDost_MVC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d6407a5999cc9841cf743baca05c937b527b9e6a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ea75cdb448b902d49b737c5a9bc4fbc0e1675d57")]
 [assembly: System.Reflection.AssemblyProductAttribute("TravelDost_MVC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TravelDost_MVC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
