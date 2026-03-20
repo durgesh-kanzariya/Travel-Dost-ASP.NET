@@ -1,0 +1,209 @@
+@model List<string>
+@{
+    ViewData["Title"] = "Emergency Support";
+    Layout = "_DashboardLayout";
+}
+
+<div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <nav class="flex mb-2" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <li><a asp-controller="Home" asp-action="Dashboard" class="hover:text-sky-600 transition-colors">Dashboard</a></li>
+                    <li><i data-lucide="chevron-right" class="h-3 w-3"></i></li>
+                    <li class="text-slate-900 dark:text-white">Emergency</li>
+                </ol>
+            </nav>
+            <h1 class="text-xl font-bold text-red-600 dark:text-red-500 sm:text-2xl flex items-center gap-2">
+                <i data-lucide="alert-octagon" class="h-6 w-6"></i>
+                Emergency Support
+            </h1>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Immediate assistance for <span id="current-country-display" class="font-bold text-slate-900 dark:text-white">Detecting...</span>.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full lg:w-auto">
+            <button onclick="detectLocation(true)" class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:border-sky-200 dark:hover:border-sky-800 transition-all shadow-sm shrink-0" title="Use Current Location">
+                <i id="refresh-icon" data-lucide="refresh-cw" class="h-5 w-5"></i>
+            </button>
+
+            <div class="relative flex-1 lg:w-72" id="search-container">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"></i>
+                    <input type="text" id="country-search" placeholder="Search country..."
+                           class="w-full pl-10 pr-10 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-colors" />
+                    <i data-lucide="chevron-down" id="chevron-icon" class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 transition-transform"></i>
+                </div>
+
+                <div id="country-dropdown" class="hidden absolute top-full mt-2 w-full max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50">
+                    @foreach (var country in Model)
+                    {
+                        <button onclick="selectCountry('@country')" class="country-opt w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium border-b border-slate-50 dark:border-slate-800 last:border-0 transition-colors">
+                            @country
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="error-alert" class="hidden mb-6 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 rounded-lg flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+        <i data-lucide="map-pin" class="h-4 w-4"></i>
+        <span id="error-message"></span>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Police Card -->
+        <div class="group relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 p-4 shadow-md border-t-4 border-blue-600 hover:-translate-y-0.5 transition-transform duration-300">
+            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <i data-lucide="shield" class="h-5 w-5"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Police</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-4">Crime & Safety</p>
+            <a id="police-link" href="tel:" class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 py-2.5 text-sm font-bold text-white transition-all active:scale-95">
+                <i data-lucide="phone" class="h-4 w-4"></i> Call <span id="police-val">...</span>
+            </a>
+        </div>
+        <!-- Ambulance Card -->
+        <div class="group relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 p-4 shadow-md border-t-4 border-red-600 hover:-translate-y-0.5 transition-transform duration-300">
+            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                <i data-lucide="ambulance" class="h-5 w-5"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Ambulance</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-4">Medical Emergency</p>
+            <a id="ambulance-link" href="tel:" class="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 hover:bg-red-700 py-2.5 text-sm font-bold text-white transition-all active:scale-95">
+                <i data-lucide="phone" class="h-4 w-4"></i> Call <span id="ambulance-val">...</span>
+            </a>
+        </div>
+        <!-- Fire Card -->
+        <div class="group relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 p-4 shadow-md border-t-4 border-orange-600 hover:-translate-y-0.5 transition-transform duration-300">
+            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                <i data-lucide="flame" class="h-5 w-5"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Fire Dept</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-4">Fire & Rescue</p>
+            <a id="fire-link" href="tel:" class="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-600 hover:bg-orange-700 py-2.5 text-sm font-bold text-white transition-all active:scale-95">
+                <i data-lucide="phone" class="h-4 w-4"></i> Call <span id="fire-val">...</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-6 grid gap-4 md:grid-cols-3">
+        <div class="md:col-span-2 rounded-xl bg-slate-900 dark:bg-slate-800 p-4 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-white/10 rounded-lg">
+                    <i data-lucide="landmark" class="h-6 w-6 text-sky-300"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold">Embassy Helpline</h3>
+                    <p class="text-slate-400 text-sm">For lost passports & legal help</p>
+                </div>
+            </div>
+            <a id="embassy-link" href="tel:" class="px-4 py-2 bg-white text-slate-900 text-sm font-bold rounded-lg hover:bg-sky-50 transition-colors shrink-0">
+                Call <span id="embassy-val">...</span>
+            </a>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm flex flex-col justify-center transition-colors min-w-0">
+            <div class="flex items-start gap-2 min-w-0">
+                <div class="mt-1.5 h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0"></div>
+                <p class="text-xs font-medium text-slate-600 dark:text-slate-300 italic break-words min-w-0 flex-1">
+                    "<span id="emergency-note">Use standard emergency protocols</span>"
+                </p>
+            </div>
+        </div>
+
+@section Scripts {
+    <script>
+        const countrySearch = document.getElementById('country-search');
+        const dropdown = document.getElementById('country-dropdown');
+        const chevron = document.getElementById('chevron-icon');
+        const refreshIcon = document.getElementById('refresh-icon');
+
+        async function detectLocation(manual = false) {
+            if (manual) refreshIcon.classList.add('animate-spin');
+            
+            if (!navigator.geolocation) {
+                showError('Geolocation is not supported');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const { latitude, longitude } = pos.coords;
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`);
+                    const data = await res.json();
+                    const country = data.address.country;
+                    await fetchEmergencyData(country);
+                } catch (e) {
+                    showError('Failed to detect location');
+                } finally {
+                    refreshIcon.classList.remove('animate-spin');
+                }
+            }, (err) => {
+                showError('Location access denied');
+                refreshIcon.classList.remove('animate-spin');
+            });
+        }
+
+        async function fetchEmergencyData(country) {
+            document.getElementById('current-country-display').innerText = country;
+            try {
+                const res = await fetch(`/api/guide/${encodeURIComponent(country)}`);
+                const guide = await res.json();
+                
+                updateUI(guide);
+            } catch (e) {
+                showError('Failed to fetch emergency data');
+            }
+        }
+
+        function updateUI(guide) {
+            document.getElementById('police-val').innerText = guide.policeNumber || '112';
+            document.getElementById('ambulance-val').innerText = guide.ambulanceNumber || '112';
+            document.getElementById('fire-val').innerText = guide.fireNumber || '112';
+            document.getElementById('embassy-val').innerText = guide.embassyNumber || '...';
+            document.getElementById('emergency-note').innerText = guide.localRules || 'Use standard emergency protocols';
+            
+            document.getElementById('police-link').href = `tel:${guide.policeNumber}`;
+            document.getElementById('ambulance-link').href = `tel:${guide.ambulanceNumber}`;
+            document.getElementById('fire-link').href = `tel:${guide.fireNumber}`;
+            document.getElementById('embassy-link').href = `tel:${guide.embassyNumber}`;
+        }
+
+        function showError(msg) {
+            const alert = document.getElementById('error-alert');
+            document.getElementById('error-message').innerText = msg;
+            alert.classList.remove('hidden');
+            setTimeout(() => alert.classList.add('hidden'), 5000);
+        }
+
+        function selectCountry(country) {
+            countrySearch.value = country;
+            dropdown.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+            fetchEmergencyData(country);
+        }
+
+        countrySearch.onfocus = () => {
+            dropdown.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+        };
+
+        countrySearch.oninput = () => {
+            const val = countrySearch.value.toLowerCase();
+            document.querySelectorAll('.country-opt').forEach(opt => {
+                opt.style.display = opt.innerText.toLowerCase().includes(val) ? 'block' : 'none';
+            });
+        };
+
+        document.onclick = (e) => {
+            if (!document.getElementById('search-container').contains(e.target)) {
+                dropdown.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => detectLocation());
+    </script>
+}
