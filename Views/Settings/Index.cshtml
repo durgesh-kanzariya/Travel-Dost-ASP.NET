@@ -1,0 +1,165 @@
+@model travel_dost_asp.net.Models.User
+@{
+    ViewData["Title"] = "Settings";
+    Layout = "_DashboardLayout";
+    var languages = new[] {
+        "English", "Spanish", "French", "German", "Chinese (Simplified)", "Japanese", "Russian", "Arabic", "Hindi", "Gujarati"
+    };
+}
+
+<div class="mb-8">
+    <nav class="flex mb-2" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <li><a asp-controller="Home" asp-action="Dashboard" class="hover:text-sky-600 transition-colors">Dashboard</a></li>
+            <li><i data-lucide="chevron-right" class="h-3 w-3"></i></li>
+            <li class="text-slate-900 dark:text-white">Settings</li>
+        </ol>
+    </nav>
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
+        Settings
+    </h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-400">
+        Manage your account and preferences
+    </p>
+</div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="mb-6 p-4 bg-green-50 text-green-700 rounded-xl border border-green-200 animate-in fade-in slide-in-from-top-4">
+            @TempData["Message"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="mb-6 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center gap-2 animate-in fade-in slide-in-from-top-4">
+            <i data-lucide="alert-circle" class="h-5 w-5"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Account Settings -->
+    <div class="mb-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+        <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white">
+            <i data-lucide="user" class="h-5 w-5"></i>
+            Account Settings
+        </h2>
+        <form asp-action="UpdateProfile" method="post" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">First Name</label>
+                    <input type="text" name="firstName" value="@Model.FirstName" required class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 outline-none focus:ring-2 focus:ring-sky-500/20" />
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Last Name</label>
+                    <input type="text" name="lastName" value="@Model.LastName" required class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 outline-none focus:ring-2 focus:ring-sky-500/20" />
+                </div>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
+                <input type="email" value="@Model.Email" readonly class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-500 bg-slate-100 dark:text-slate-400 dark:bg-slate-800 focus:outline-none cursor-not-allowed" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Native Language</label>
+                    <input list="languages-list" name="nativeLanguage" value="@Model.NativeLanguage" placeholder="Search language..." 
+                           class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 outline-none focus:ring-2 focus:ring-sky-500/20" />
+                    <datalist id="languages-list">
+                        @foreach (var lang in languages)
+                        {
+                            <option value="@lang" />
+                        }
+                    </datalist>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Default Currency</label>
+                    <select name="defaultCurrency" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 outline-none focus:ring-2 focus:ring-sky-500/20">
+                        @foreach (var curr in new[] { "USD", "EUR", "GBP", "INR", "JPY", "AUD", "CAD" })
+                        {
+                            if (Model.DefaultCurrency == curr)
+                            {
+                                <option value="@curr" selected>@curr</option>
+                            }
+                            else
+                            {
+                                <option value="@curr">@curr</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="flex items-center gap-2 rounded-lg bg-sky-600 px-6 py-2 font-medium text-white transition-colors hover:bg-sky-700">
+                <i data-lucide="save" class="h-4 w-4"></i>
+                Save Profile
+            </button>
+        </form>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="mb-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+        <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white">
+            <i data-lucide="lock" class="h-5 w-5"></i>
+            Security
+        </h2>
+        <form asp-action="ChangePassword" method="post" class="space-y-4">
+            <div>
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Current Password</label>
+                <input type="password" name="oldPassword" required placeholder="••••••••" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 outline-none focus:ring-2 focus:ring-sky-500/20" />
+            </div>
+            <div>
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">New Password</label>
+                <input type="password" name="newPassword" required placeholder="••••••••" class="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-900 dark:text-white dark:bg-slate-800 focus:border-sky-500 outline-none focus:ring-2 focus:ring-sky-500/20" />
+            </div>
+            <button type="submit" class="rounded-lg border border-slate-300 dark:border-slate-600 px-6 py-2 font-medium text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800">
+                Change Password
+            </button>
+        </form>
+    </div>
+
+    <!-- Preferences -->
+    <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+        <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white">
+            <i data-lucide="bell" class="h-5 w-5"></i>
+            Preferences
+        </h2>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-medium text-slate-900 dark:text-white">Notifications</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Receive alerts for emergency updates</p>
+                </div>
+                <button onclick="toggleSwitch(this)" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-sky-600">
+                    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
+                </button>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-4">
+                <div>
+                    <p class="font-medium text-slate-900 dark:text-white">Location Tracking</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Auto-detect your location</p>
+                </div>
+                <button onclick="toggleSwitch(this)" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-sky-600">
+                    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleSwitch(btn) {
+            const span = btn.querySelector('span');
+            if (btn.classList.contains('bg-sky-600')) {
+                btn.classList.remove('bg-sky-600');
+                btn.classList.add('bg-slate-300');
+                span.classList.remove('translate-x-6');
+                span.classList.add('translate-x-1');
+            } else {
+                btn.classList.remove('bg-slate-300');
+                btn.classList.add('bg-sky-600');
+                span.classList.remove('translate-x-1');
+                span.classList.add('translate-x-6');
+            }
+        }
+    </script>
+}
