@@ -1,0 +1,253 @@
+@using travel_dost_asp.net.Models
+@model List<Trip>
+@{
+    ViewData["Title"] = "My Trips";
+    Layout = "_DashboardLayout";
+
+    // Helper mapped to getStatus from React
+    string GetStatusClass(DateTime start, DateTime end)
+    {
+        var now = DateTime.UtcNow;
+        if (now < start) return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+        if (now >= start && now <= end) return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
+    }
+
+    string GetStatusLabel(DateTime start, DateTime end)
+    {
+        var now = DateTime.UtcNow;
+        if (now < start) return "Upcoming";
+        if (now >= start && now <= end) return "Ongoing";
+        return "Completed";
+    }
+}
+
+<div class="mb-8">
+    <nav class="flex mb-2" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <li><a asp-controller="Home" asp-action="Dashboard" class="hover:text-sky-600 transition-colors">Dashboard</a></li>
+            <li><i data-lucide="chevron-right" class="h-3 w-3"></i></li>
+            <li class="text-slate-900 dark:text-white">My Trips</li>
+        </ol>
+    </nav>
+    <div class="flex items-center justify-between mt-2">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl flex items-center gap-3">
+                <i data-lucide="plane" class="h-8 w-8 text-sky-600 dark:text-sky-400"></i>
+                My Trips
+            </h1>
+            <p class="mt-2 text-slate-600 dark:text-slate-400">Plan and manage your travel trips</p>
+        </div>
+        <button onclick="openCreateModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-medium transition-colors">
+            <i data-lucide="plus" class="h-4 w-4"></i>
+            New Trip
+        </button>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <i data-lucide="plane" class="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4"></i>
+        <p class="text-slate-500 dark:text-slate-400 mb-4">No trips planned yet</p>
+        <button onclick="openCreateModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-medium transition-colors">
+            <i data-lucide="plus" class="h-4 w-4"></i>
+            Plan Your First Trip
+        </button>
+    </div>
+}
+else
+{
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var trip in Model)
+        {
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-xl bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center shrink-0">
+                            <i data-lucide="map-pin" class="h-5 w-5 text-sky-600 dark:text-sky-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white leading-snug">
+                                @(string.IsNullOrEmpty(trip.Destination) ? "Unknown" : trip.Destination.Replace("|", " → "))
+                            </h3>
+                            <span class="text-xs px-2 py-0.5 rounded-full mt-1 inline-block @GetStatusClass(trip.StartDate, trip.EndDate)">
+                                @GetStatusLabel(trip.StartDate, trip.EndDate)
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="openEditModal('@trip.TripId', '@trip.Destination', '@trip.StartDate.ToString("yyyy-MM-dd")', '@trip.EndDate.ToString("yyyy-MM-dd")', '@trip.Budget', '@trip.Currency')" class="p-2 text-slate-400 hover:text-sky-500 transition-colors">
+                            <i data-lucide="pencil" class="h-4 w-4"></i>
+                        </button>
+                        <button onclick="deleteTrip(@trip.TripId)" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-3 text-sm mt-4">
+                    <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                        <i data-lucide="calendar" class="h-4 w-4"></i>
+                        <span>@trip.StartDate.ToString("MMM d, yyyy") - @trip.EndDate.ToString("MMM d, yyyy")</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                        <i data-lucide="dollar-sign" class="h-4 w-4"></i>
+                        <span>@trip.Currency @trip.Budget.ToString("N0")</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Create/Edit Modal -->
+<div id="trip-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+            <h2 id="modal-title" class="text-xl font-semibold text-slate-900 dark:text-white">Plan New Trip</h2>
+            <button type="button" onclick="closeModal()" class="p-2 text-slate-400 hover:text-slate-500 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+        </div>
+        <form id="trip-form" method="post" class="p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+            <input type="hidden" name="id" id="trip-id" />
+            
+            <datalist id="countryList">
+                @foreach(var c in (ViewBag.Countries as List<string> ?? new List<string>())) {
+                    <option value="@c" />
+                }
+            </datalist>
+
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Destinations *</label>
+                    <button type="button" onclick="addStop()" id="add-stop-btn" class="flex items-center gap-1 text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 font-medium">
+                        <i data-lucide="plus" class="h-3.5 w-3.5"></i> Add stop
+                    </button>
+                </div>
+                <div id="destinations-container" class="space-y-2">
+                    <!-- Dynamic destination inputs injected by JS -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Start Date *</label>
+                    <input type="date" name="startDate" id="trip-start" required class="w-full px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">End Date *</label>
+                    <input type="date" name="endDate" id="trip-end" required class="w-full px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none" />
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Budget</label>
+                    <input type="number" min="0" step="0.01" name="budget" id="trip-budget" class="w-full px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none" placeholder="e.g. 2000" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Currency</label>
+                    <select name="currency" id="trip-currency" class="w-full px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="INR">INR</option>
+                        <option value="JPY">JPY</option>
+                        <option value="AUD">AUD</option>
+                        <option value="CAD">CAD</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit" id="trip-submit" class="w-full py-3 mt-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-medium transition-colors">Create Trip</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let stopCount = 0;
+
+        function addStop(value = '') {
+            if (stopCount >= 5) return;
+            const container = document.getElementById('destinations-container');
+            const rowId = 'stop-' + stopCount;
+            const html = `
+                <div id="${rowId}" class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 text-slate-400 text-xs min-w-[54px]">
+                        <i data-lucide="map-pin" class="h-3.5 w-3.5 shrink-0"></i>
+                         ${stopCount === 0 ? 'Start' : 'Stop ' + stopCount}
+                    </div>
+                    <input type="text" name="destinations" list="countryList" value="${value}" required class="flex-1 px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none" placeholder="Search country..." />
+                    ${stopCount > 0 ? `<button type="button" onclick="removeStop('${rowId}')" class="p-1 text-slate-400 hover:text-red-500 transition-colors"><i data-lucide="x" class="h-4 w-4"></i></button>` : ''}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            if (window.lucide) lucide.createIcons();
+            stopCount++;
+            if (stopCount >= 5) document.getElementById('add-stop-btn').style.display = 'none';
+        }
+
+        function removeStop(id) {
+            document.getElementById(id).remove();
+            stopCount--;
+            document.getElementById('add-stop-btn').style.display = 'flex';
+        }
+
+        function openCreateModal() {
+            document.getElementById('modal-title').innerText = 'Plan New Trip';
+            document.getElementById('trip-submit').innerText = 'Create Trip';
+            document.getElementById('trip-form').action = '/Trips/Create';
+            document.getElementById('trip-id').value = '';
+            
+            document.getElementById('destinations-container').innerHTML = '';
+            stopCount = 0;
+            addStop();
+
+            document.getElementById('trip-start').value = '';
+            document.getElementById('trip-end').value = '';
+            document.getElementById('trip-budget').value = '';
+            document.getElementById('trip-modal').classList.remove('hidden');
+        }
+
+        function openEditModal(id, destStr, start, end, budget, curr) {
+            document.getElementById('modal-title').innerText = 'Edit Trip';
+            document.getElementById('trip-submit').innerText = 'Save Changes';
+            document.getElementById('trip-form').action = '/Trips/Edit';
+            document.getElementById('trip-id').value = id;
+            
+            document.getElementById('destinations-container').innerHTML = '';
+            stopCount = 0;
+            const dests = destStr.split('|');
+            if (dests.length === 0 || (dests.length === 1 && dests[0] === '')) {
+                addStop();
+            } else {
+                dests.forEach(d => addStop(d));
+            }
+
+            document.getElementById('trip-start').value = start;
+            document.getElementById('trip-end').value = end;
+            document.getElementById('trip-budget').value = budget;
+            document.getElementById('trip-currency').value = curr;
+            document.getElementById('trip-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('trip-modal').classList.add('hidden');
+        }
+
+        async function deleteTrip(id) {
+            if (!confirm('Are you sure you want to delete this trip? All associated expenses and checklists will be removed.')) return;
+            try {
+                const res = await fetch(`/Trips/Delete?id=${id}`, { method: 'POST' });
+                if (res.ok) {
+                    location.reload();
+                }
+            } catch (e) {
+                alert('Failed to delete trip.');
+            }
+        }
+    </script>
+}
