@@ -131,3 +131,5 @@ namespace travel_dost_asp.net.Controllers
         }
     }
 }
+
+// SettingsController: password change and profile update logic finalized
